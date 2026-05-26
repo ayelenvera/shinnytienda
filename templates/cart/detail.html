@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load product_tags %}
+
+{% block title %}Carrito — {{ store_info.store_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Tu carrito</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if cart.item_count %}
+        <div class="cart-table">
+            {% for item in cart %}
+            <div class="cart-row">
+                <div class="cart-product">
+                    {% if item.product.primary_image %}
+                        <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                        <div class="product-placeholder product-placeholder--small"></div>
+                    {% endif %}
+                    <div>
+                        <a href="{{ item.product.get_absolute_url }}"><strong>{{ item.product.name }}</strong></a>
+                        <p class="muted">{{ item.product.code }}</p>
+                    </div>
+                </div>
+                <p class="cart-price">{{ item.product.discounted_price|currency }}</p>
+                <form action="{% url 'cart:update' item.product.pk %}" method="post" class="cart-qty-form">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" onchange="this.form.submit()">
+                </form>
+                <p class="cart-line-total">{{ item.line_total|currency }}</p>
+                <form action="{% url 'cart:remove' item.product.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-link" aria-label="Eliminar">✕</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <p class="cart-subtotal">Subtotal: <strong>{{ cart.subtotal|currency }}</strong></p>
+            <p class="muted">Los precios finales se confirman por WhatsApp.</p>
+            <a href="{{ whatsapp_url }}" class="btn btn-whatsapp btn-large" target="_blank" rel="noopener">
+                Confirmar todo por WhatsApp
+            </a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Tu carrito está vacío.</p>
+            <a href="{% url 'products:list' %}" class="btn btn-primary">Explorar catálogo</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

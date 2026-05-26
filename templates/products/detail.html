@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load product_tags %}
+
+{% block title %}{{ product.name }} — {{ store_info.store_name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container product-detail">
+        <div class="product-gallery">
+            {% if product.images.all %}
+                <div class="gallery-main">
+                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}" id="main-image">
+                </div>
+                {% if product.images.count > 1 %}
+                <div class="gallery-thumbs">
+                    {% for image in product.images.all %}
+                    <button type="button" class="thumb-btn" data-src="{{ image.image.url }}">
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="product-placeholder product-placeholder--large"></div>
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <p class="product-code">SKU: {{ product.code }}</p>
+            <h1>{{ product.name }}</h1>
+
+            {% if product.get_active_promotion %}
+                <p class="price price--promo">
+                    <span class="price-old">{{ product.price|currency }}</span>
+                    {{ product.discounted_price|currency }}
+                    <span class="promo-label">-{{ product.get_active_promotion.discount_percentage }}%</span>
+                </p>
+            {% else %}
+                <p class="price price--large">{{ product.price|currency }}</p>
+            {% endif %}
+
+            <div class="product-description">
+                {{ product.description|linebreaks }}
+            </div>
+
+            <div class="product-actions">
+                <form action="{% url 'cart:add' product.pk %}" method="post" class="add-to-cart-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="99">
+                    <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
+                </form>
+
+                <a href="{{ whatsapp_url }}" class="btn btn-whatsapp" target="_blank" rel="noopener">
+                    Pedir por WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if product.images.count > 1 %}
+<script>
+document.querySelectorAll('.thumb-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('main-image').src = btn.dataset.src;
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

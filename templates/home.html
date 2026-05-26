@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load product_tags %}
+
+{% block title %}Inicio — {{ store_info.store_name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <p class="hero-eyebrow">Acero quirúrgico hipoalergénico</p>
+        <h1>{{ store_info.store_name }}</h1>
+        <p class="hero-text">Descubre piezas elegantes para cada ocasión. Pide por WhatsApp de forma sencilla.</p>
+        <a href="{% url 'products:list' %}" class="btn btn-primary">Ver catálogo completo</a>
+    </div>
+</section>
+
+{% if collections %}
+<section class="collections-section">
+
+    <button class="carousel-btn prev" onclick="scrollCollections(-1)">
+        ‹
+    </button>
+
+    <div class="collections-carousel" id="collectionsCarousel">
+
+        {% for collection in collections %}
+        <div class="collection-slide">
+
+            <a href="{% url 'products:list' %}?collection={{ collection.slug }}">
+
+                {% if collection.image %}
+                    <picture>
+
+                        {% if collection.mobile_image %}
+                            <source
+                                media="(max-width: 768px)"
+                                srcset="{{ collection.mobile_image.url }}">
+                        {% endif %}
+                
+                    <img src="{{ collection.image.url }}" alt="{{ collection.name }}">
+                
+                    </picture>
+                {% endif %}
+
+                <div class="collection-overlay">
+                    <p>{{ collection.banner_text }}</p>
+                </div>
+
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <button class="carousel-btn next" onclick="scrollCollections(1)">
+        ›
+    </button>
+
+</section>
+{% endif %}
+
+{% if featured_products %}
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Destacados</h2>
+        <div class="product-grid">
+            {% for featured in featured_products %}
+                {% with product=featured.product %}
+                <article class="product-card">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% if product.primary_image %}
+                            <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="product-placeholder"></div>
+                        {% endif %}
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">{{ product.discounted_price|currency }}</p>
+                    </a>
+                </article>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if promotions %}
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Promociones</h2>
+        <div class="product-grid">
+            {% for promo in promotions %}
+                {% with product=promo.product %}
+                <article class="product-card product-card--promo">
+                    <span class="promo-badge">-{{ promo.discount_percentage }}%</span>
+                    <a href="{{ product.get_absolute_url }}">
+                        {% if product.primary_image %}
+                            <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="product-placeholder"></div>
+                        {% endif %}
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">
+                            <span class="price-old">{{ product.price|currency }}</span>
+                            {{ product.discounted_price|currency }}
+                        </p>
+                    </a>
+                </article>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

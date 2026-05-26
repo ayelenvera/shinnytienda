@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load product_tags %}
+
+{% block title %}Catálogo — {{ store_info.store_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Catálogo</h1>
+        {% if active_collection %}
+            <p>Colección: <strong>{{ active_collection.name }}</strong></p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="container catalog-layout">
+        <aside class="filters">
+            <h2>Colecciones</h2>
+            <ul>
+                <li><a href="{% url 'products:list' %}" class="{% if not active_collection %}active{% endif %}">Todas</a></li>
+                {% for collection in collections %}
+                <li>
+                    <a href="?collection={{ collection.slug }}"
+                       class="{% if active_collection.slug == collection.slug %}active{% endif %}">
+                        {{ collection.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <div class="catalog-main">
+            {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                <article class="product-card">
+                    {% if product.get_active_promotion %}
+                        <span class="promo-badge">-{{ product.get_active_promotion.discount_percentage }}%</span>
+                    {% endif %}
+                    <a href="{{ product.get_absolute_url }}">
+                        {% if product.primary_image %}
+                            <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="product-placeholder"></div>
+                        {% endif %}
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">{{ product.discounted_price|currency }}</p>
+                    </a>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">No hay productos en esta colección.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
