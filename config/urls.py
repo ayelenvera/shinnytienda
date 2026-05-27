@@ -2,16 +2,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.http import HttpResponse
-
-def home(request):
-    return HttpResponse("Shinny Tienda está funcionando 🚀")
+from store.views import home
 
 urlpatterns = [
+    path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('', include('products.urls')),
     path('', include('cart.urls')),
-    path('', home),
 ]
 
 if settings.DEBUG:
