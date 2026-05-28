@@ -1,8 +1,8 @@
 import urllib.parse
 
 
-ORDER_HEADER = "Hello! I want to place an order:\n\n"
-ORDER_FOOTER = "\n\nPlease confirm availability."
+ORDER_HEADER = "Hola! Quiero hacer un pedido:\n\n"
+ORDER_FOOTER = "\n\nPor favor, confirme la disponibilidad."
 
 
 def format_order_line(product_name: str, quantity: int) -> str:
