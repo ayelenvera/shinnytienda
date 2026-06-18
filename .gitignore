@@ -4,6 +4,6 @@ __pycache__/
 .env
 .venv/
 db.sqlite3
-media/
+#media/
 *.log
 .DS_Store
